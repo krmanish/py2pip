@@ -1,0 +1,4 @@
+asyncio task cancel does not guarenty the task close, it mark the task canceled but the process runnning under it wont have any impact of. Task has to be complete prior to raise CancleError exception.
+
+Solution:
+	Needs to get rid of waiting task cancle time. Needs to find way to add tasks that are useful to fetch records. Avoid asyncio.gather as much possible.
