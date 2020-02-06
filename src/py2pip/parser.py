@@ -3,7 +3,7 @@ import re
 
 from bs4 import BeautifulSoup
 
-import config
+from py2pip import config
 
 
 class ParseHTML(object):

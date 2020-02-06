@@ -7,13 +7,13 @@ import asyncio
 import subprocess
 import sys
 
-import config
-from parser import ParseHistoryHTML, ParsePackageVersionHTML
+from py2pip import config
+from py2pip.parser import ParseHistoryHTML, ParsePackageVersionHTML
 
 
 class Py2PIPManager(object):
 
-    def __init__(self, log, project_name, support_py_version, install=False):
+    def __init__(self, project_name, support_py_version, install=False, log=None):
         self.package_history_url = config.PIPServer.HOST + config.PIPServer.PATH.format(project=project_name)
         self.log = log
 
