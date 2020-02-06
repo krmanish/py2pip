@@ -15,10 +15,7 @@ import subprocess
 from distutils.core import Command
 from distutils.command.sdist import sdist as _sdist
 from distutils.command.bdist_rpm import bdist_rpm as _bdist_rpm
-from pathlib import Path
 from setuptools import setup, find_packages
-
-import build_version
 
 
 PACKAGE_NAME = 'py2pip'
@@ -48,8 +45,6 @@ def read(*names):
 long_description = '\n\n'.join(
     read(*paths) for paths in (('README.rst',),('CHANGES.rst',)))
 
-SITE_PACKAGES = Path('/usr/lib/python{}.{}/site-packages'.format(sys.version_info.major, sys.version_info.minor))
-
 setup(name=PACKAGE_NAME,
     version=version,
     description="Master package for Py2PIP",
@@ -57,7 +52,8 @@ setup(name=PACKAGE_NAME,
     classifiers=[
         "Development Status :: 1 - Planning",
         "Environment :: No Input/Output (Daemon)",
-        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3 :: Only",
         "License :: Other/Proprietary License",
         "Operating System :: POSIX :: Linux",
         "Topic :: Office/Business/Personal/Development",
@@ -73,6 +69,7 @@ setup(name=PACKAGE_NAME,
     zip_safe=False,
     install_requires=[
         "setuptools",
+        "aiohttp",
     ],
     entry_points={
         'console_scripts': [

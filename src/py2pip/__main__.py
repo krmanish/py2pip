@@ -8,7 +8,7 @@ import sys
 from logging.handlers import RotatingFileHandler
 
 import config
-from py2pip import Py2PIP
+from process import Py2PIPManager
 
 
 MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MiB
@@ -49,7 +49,7 @@ def main():
         option = options()
         if not option.support:
             return
-        py2pip_manager = Py2PIP(log, option.package, option.support, option.install)
+        py2pip_manager = Py2PIPManager(log, option.package, option.support, option.install)
         
         stime = time.time()
         result = py2pip_manager.run()

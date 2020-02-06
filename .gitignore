@@ -1,1 +1,4 @@
-*/__pycache__
+**/__pycache__
+*/py2pip.egg-info/
+build/
+dist/

@@ -1,8 +1,9 @@
 import asyncio
 import re
 
-import config
 from bs4 import BeautifulSoup
+
+import config
 
 
 class ParseHTML(object):
