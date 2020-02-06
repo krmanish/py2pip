@@ -2,17 +2,15 @@
 
 import argparse
 import logging
-import pathlib
 import time
 import sys
 
 from logging.handlers import RotatingFileHandler
 
+import config
 from py2pip import Py2PIP
 
 
-BASE_DIR = pathlib.Path().resolve()
-PATH_LOG_FILE = BASE_DIR / 'py2pip_status.log'
 MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MiB
 MAX_BACKUP_FILE = 5
 
@@ -24,10 +22,10 @@ def get_logger():
     formatter = logging.Formatter('%(asctime)s.%(msecs)03d %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
     logger = logging.getLogger("Py2pip handler")
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.DEBUG if config.DEBUG else logging.INFO)
 
     # add a rotating handler
-    handler = RotatingFileHandler(str(PATH_LOG_FILE), maxBytes=MAX_FILE_SIZE, backupCount=MAX_BACKUP_FILE, encoding='UTF-8')
+    handler = RotatingFileHandler(str(config.PATH_LOG_FILE), maxBytes=MAX_FILE_SIZE, backupCount=MAX_BACKUP_FILE, encoding='UTF-8')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     return logger

@@ -43,11 +43,12 @@ class Py2PIP(object):
         return self.get_support_pkg_version()
 
     async def process_versions_page(self, session):
-        self.log.info(f'Iterator over the version list of the package {self.package}')
         version_list = self.history_page_parser.get_versions()
         if not version_list:
             self.log.error(f'No version list found of the package {self.package}')
             return
+
+        self.log.info(f"Iterate versions of lib {self.package}\n\t{', '.join(version_list.keys())}")
 
         for pkg_version, pkg_data in version_list.items():
             url = pkg_data['url']
@@ -57,7 +58,7 @@ class Py2PIP(object):
         """
         Ensure consistency to share the package version as well
         """
-        self.log.info(f'Read PyPI package history version page {url}')
+        self.log.debug(f'Read PyPI package history version page {url}')
         if self.history_versions_page_parser.found():
             return
 

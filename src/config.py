@@ -1,11 +1,17 @@
 """
 Define all the constant and hard code value
 """
+import pathlib
 
-import enum
+DEBUG = False
 
+BASE_DIR = pathlib.Path(__file__).parent.resolve()
 
-SHOW_PRINT = True
+PATH_STATS_FILE = BASE_DIR / 'stats.txt'
+
+SUFFIX_LOG_FILE = 'py2pip_status.log'
+PATH_LOG_FILE = BASE_DIR / SUFFIX_LOG_FILE
+
 
 
 class LookupTags():

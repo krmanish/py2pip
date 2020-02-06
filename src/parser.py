@@ -81,12 +81,15 @@ class ParsePackageVersionHTML(ParseHTML):
         for element in li_node.find('ul').find_all('li'):
             version_pack = element.find('a').text.strip()
             matched = re.match('Python\s*::\s*(?P<version>[0-9.]+)\s*(::)?', version_pack)
-            if matched:
-                remote_py_version = matched.group('version')
-                if remote_py_version == py_version or py_version.startswith(remote_py_version):
-                    self.log.info(f'Matched:  {remote_py_version} for {pkg_version}')
-                    if self.pkg_version is None:
-                        self.pkg_version = pkg_version
+            if not matched:
+                continue
+
+            remote_py_version = matched.group('version')
+            if remote_py_version == py_version or py_version.startswith(remote_py_version):
+                if self.pkg_version is None:
+                    self.log.info(f'Found supporting package version {pkg_version}')
+                    self.pkg_version = pkg_version
+                    return
 
     async def process(self, content, py_version, pkg_version):
         self.log.info(f'Parse version html page {pkg_version} to look for {py_version}')
