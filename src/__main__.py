@@ -1,17 +1,46 @@
 #!/usr/bin/env python3
 
 import argparse
+import logging
+import pathlib
 import time
 import sys
+
+from logging.handlers import RotatingFileHandler
 
 from py2pip import Py2PIP
 
 
+BASE_DIR = pathlib.Path().resolve()
+PATH_LOG_FILE = BASE_DIR / 'py2pip_status.log'
+MAX_FILE_SIZE = 2 * 1024 * 1024  # 2 MiB
+MAX_BACKUP_FILE = 5
+
+
+def get_logger():
+    """
+    Creates a rotating log
+    """
+    formatter = logging.Formatter('%(asctime)s.%(msecs)03d %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+
+    logger = logging.getLogger("Py2pip handler")
+    logger.setLevel(logging.DEBUG)
+
+    # add a rotating handler
+    handler = RotatingFileHandler(str(PATH_LOG_FILE), maxBytes=MAX_FILE_SIZE, backupCount=MAX_BACKUP_FILE, encoding='UTF-8')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    return logger
+
+log = get_logger()
+
 def options():
     parser = argparse.ArgumentParser('Verify-And-Install-Package')
-    parser.add_argument('-i', '--install', action='store_true', help="Install package")
-    parser.add_argument('-s', '--support', type=str, help="Find Support Python Version, 2.7, 2.6, 3.1, 3.5 etc.")
-    parser.add_argument('-p', '--package', type=str, help="Package Name", required=True)
+    parser.add_argument('-i', '--install', action='store_true',
+            help="Pass if you want to install package of supported Python version")
+    parser.add_argument('-v', '--version', dest='support', type=str, required=True,
+            help="Find Support Python Version i.e 2.7, 2.6, 3.1, 3.5 etc.")
+    parser.add_argument('-p', '--package', type=str, help="Python Package Name registered to PIP", required=True)
     
     args = parser.parse_args()
     return args
@@ -22,17 +51,15 @@ def main():
         option = options()
         if not option.support:
             return
-
-        py2pip_manager = Py2PIP(option.package, option.support, option.install)
+        py2pip_manager = Py2PIP(log, option.package, option.support, option.install)
         
         stime = time.time()
         result = py2pip_manager.run()
         etime = time.time()
-        print(f'Support Version is {result}  took time {etime - stime}')
+        print(f'Support Version: {result}\nExecution time: {etime - stime}')
 
     except ValueError as e:
-        print('Error: {}'.format(str(e)))
+        log.exception(f'Error: {str(e)}')
 
 if __name__ == '__main__':
     sys.exit(main())
-

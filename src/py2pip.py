@@ -8,104 +8,77 @@ import subprocess
 import sys
 
 import config
-from utils import Logger
-from parser import ParseHTML
+from parser import ParseHistoryHTML, ParsePackageVersionHTML
 
 
 class Py2PIP(object):
 
-    def __init__(self, project_name, support_py_version, install=False):
+    def __init__(self, log, project_name, support_py_version, install=False):
+        self.package_history_url = config.PIPServer.HOST + config.PIPServer.PATH.format(project=project_name)
+        self.log = log
+
         self.package = project_name
         self.install = install
         self.support_py_version = support_py_version
-        self.log = Logger()
-        self.process = ProcessHistoryPage(self)
 
-    def run(self):
-        self.process.start()
-
-        # Return value upon completion
-        return self.process.get_support_pkg_version()
-
-
-class ProcessHistoryPage(object):
-
-    def __init__(self, py2pip_manager):
-        self.py2pip_manager = py2pip_manager
-        self.log = py2pip_manager.log
-        self.support_py_version = py2pip_manager.support_py_version
-        self.support_pkg_version = None
-        self.found_matched = False
-
-        self.url = config.PIPServer.HOST + config.PIPServer.PATH.format(project=self.py2pip_manager.package)
-
-        self.html_parser = ParseHTML(self, self.log)
-
-    def get_support_pkg_version(self):
-        if not self.support_pkg_version or not self.found_matched:
-            return
-        return f'{self.py2pip_manager.package}=={self.support_pkg_version}'
+        self.history_page_parser = ParseHistoryHTML(self.log)
+        self.history_versions_page_parser = ParsePackageVersionHTML(self.log)
 
     def start(self):
-        self.log.info(f'Start the loop and so the process')
+        self.log.info(f'Commence io loop...')
         self.loop = asyncio.get_event_loop()
-        asyncio.ensure_future(self.download_versions())
-        self.loop.run_forever()  # close will have no effect if called with run_until_complete
-    
-    def _close_all_tasks(self):
-        self.log.info(f'Close all active tasks')
-        i = 1
-        for task in asyncio.Task.all_tasks():
-            print('Canceling tasks:  ', i)
-            i = i+1
-            task.cancel()
+        self.loop.set_debug(enabled=True)
+        self.loop.run_until_complete(self.process_package_history_page())  # close will have no effect if called with run_until_complete
 
-    def stop(self, pkg_version):
-        """ Should be called to find the valid py version otherwise no matching version found"""
-        self.log.info(f'Close IO loop started')
-        if self.found_matched:
+    def get_support_pkg_version(self):
+        if not self.history_versions_page_parser.found():
             return
+        return f'{self.package}=={self.history_versions_page_parser.pkg_version}'
 
-        self.found_matched = True
-        self.support_pkg_version = pkg_version
+    def run(self):
+        self.log.info(f"Commence the process to find Python{self.support_py_version} supported package '{self.package}'")
+        self.start()
 
-        if self.loop.is_running():
-            self._close_all_tasks()
-            self.log.info(f'Closing IO loop')
-            self.loop.stop()
-            self.loop.close()
-        sys.exit(255)
+        # Return value upon completion
+        return self.get_support_pkg_version()
 
-    async def process_version_page(self, session):
-        version_list = self.html_parser.get_versions()
+    async def process_versions_page(self, session):
+        self.log.info(f'Iterator over the version list of the package {self.package}')
+        version_list = self.history_page_parser.get_versions()
         if not version_list:
+            self.log.error(f'No version list found of the package {self.package}')
             return
 
-        tasks = []
         for pkg_version, pkg_data in version_list.items():
             url = pkg_data['url']
-            print(f'Process Package as follow:  {pkg_version}')
-            # task = asyncio.ensure_future(self.read_version_page(session, url, pkg_version))
-            # tasks.append(task)
             await self.read_version_page(session, url, pkg_version)
-        # await asyncio.gather(*tasks, return_exceptions=True)
 
     async def read_version_page(self, session, url, package_version):
         """
         Ensure consistency to share the package version as well
         """
+        self.log.info(f'Read PyPI package history version page {url}')
+        if self.history_versions_page_parser.found():
+            return
+
         async with session.get(url) as response:
             if response.status == 200:
                 content = await response.text()
-                await self.html_parser.version_page(content, self.support_py_version, package_version)
+                await self.history_versions_page_parser.process(content, self.support_py_version, package_version)
+            else:
+                self.log.error(f'{response.status}: PyPi {url} is {response.reason}')
 
-    async def process_page(self, session, url):
-        async with session.get(url) as response:
+    async def process_history_page(self, session):
+        self.log.info('Read package history page')
+        async with session.get(self.package_history_url) as response:
             if response.status == 200:
                 content = await response.text()
-                await self.html_parser.history_page(content)
+                await self.history_page_parser.process(content)
+            else:
+                self.log.error(f'{response.status}: PyPi Package {self.package_history_url} is {response.reason}')
 
-    async def download_versions(self):
+    async def process_package_history_page(self):
         async with aiohttp.ClientSession() as session:
-            await self.process_page(session, self.url)
-            await self.process_version_page(session)
+            await self.process_history_page(session)
+            if self.history_page_parser.get_versions():
+                await self.process_versions_page(session)
