@@ -49,7 +49,7 @@ def main():
         option = options()
         if not option.support:
             return
-        py2pip_manager = Py2PIPManager(log, option.package, option.support, option.install)
+        py2pip_manager = Py2PIPManager(option.package, option.support, option.install, log)
         
         stime = time.time()
         result = py2pip_manager.run()

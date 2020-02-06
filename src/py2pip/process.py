@@ -9,11 +9,28 @@ import sys
 
 from py2pip import config
 from py2pip.parser import ParseHistoryHTML, ParsePackageVersionHTML
+from py2pip.simulator import Logger
 
 
 class Py2PIPManager(object):
 
-    def __init__(self, project_name, support_py_version, install=False, log=None):
+    def __init__(self, project_name, support_py_version, install=False, log=Logger()):
+        """
+        Find the python supported package version.
+        :param project_name: Python Package Name, 3rd party registered to pip
+        :param support_py_version: Python version like 2.7
+        :param install: Install the supported Python version package locally #ToDO
+        :param log: Default to the simulator log. Ignore for pip install.
+
+        Example:
+            project_name:  Django
+            support_py_version: 2.7
+        Result:
+            Success:
+                Support Py2.7 Django is: Django==1.11.28
+            Failure:
+                None
+        """
         self.package_history_url = config.PIPServer.HOST + config.PIPServer.PATH.format(project=project_name)
         self.log = log
 
@@ -27,7 +44,7 @@ class Py2PIPManager(object):
     def start(self):
         self.log.info(f'Commence io loop...')
         self.loop = asyncio.get_event_loop()
-        self.loop.set_debug(enabled=True)
+        # self.loop.set_debug(enabled=True)
         self.loop.run_until_complete(self.process_package_history_page())  # close will have no effect if called with run_until_complete
 
     def get_support_pkg_version(self):

@@ -4,6 +4,8 @@ Define all the constant and hard code value
 import pathlib
 
 DEBUG = False
+ENABLE_SIMULATOR = True
+
 
 BASE_DIR = pathlib.Path(__file__).parent.resolve()
 

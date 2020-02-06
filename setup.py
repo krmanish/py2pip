@@ -69,6 +69,8 @@ setup(name=PACKAGE_NAME,
     zip_safe=False,
     install_requires=[
         "setuptools",
+        "packaging",
+        "beautifulsoup4",
         "aiohttp",
     ],
     entry_points={

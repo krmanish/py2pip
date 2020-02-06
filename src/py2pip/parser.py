@@ -101,7 +101,6 @@ class ParsePackageVersionHTML(ParseHTML):
             'ul', attrs={'class': 'sidebar-section__classifiers'})
 
         for li in version_ul_node.children:
-            # Ignore empty record
             if isinstance(li, str):
                 continue
             title = li.find('strong').text.strip()
