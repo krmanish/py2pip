@@ -19,7 +19,7 @@ from setuptools import setup, find_packages
 
 
 PACKAGE_NAME = 'py2pip'
-version = '1.0.0'
+version = '1.0.1'
 
 
 class Sdist(_sdist):
@@ -43,12 +43,13 @@ def read(*names):
     return open(os.path.join(this_directory, *names), 'r').read().strip()
 
 long_description = '\n\n'.join(
-    read(*paths) for paths in (('README.rst',),('CHANGES.rst',)))
+    read(*paths) for paths in (('README.md',),('CHANGES.md',)))
 
 setup(name=PACKAGE_NAME,
     version=version,
     description="Master package for Py2PIP",
     long_description=long_description,
+    long_description_content_type='text/markdown',
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Development Status :: 5 - Production/Stable",
@@ -59,22 +60,25 @@ setup(name=PACKAGE_NAME,
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.6",
-        "License :: Other/Proprietary License",
+        'License :: OSI Approved :: MIT License',
         "Operating System :: POSIX :: Linux",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
         "Topic :: Internet :: WWW/HTTP :: Session",
         "Topic :: Text Processing :: Markup :: HTML",
+        'Natural Language :: English',
+        'Intended Audience :: Developers'
     ],
     keywords='Developer, Python, Version, Compatibility',
     author='Manish Kumar',
     author_email='kumarmanish890@gmail.com',
     url='http://pypi.python.org/pypi/py2pip',
-    license='Other',
+    license='MIT',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     include_package_data=True,
     zip_safe=False,
+    python_requires='>=3',
     install_requires=[
         "setuptools",
         "packaging",
