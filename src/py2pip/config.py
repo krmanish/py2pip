@@ -7,13 +7,16 @@ DEBUG = False
 ENABLE_SIMULATOR = True
 
 
-BASE_DIR = pathlib.Path(__file__).parent.resolve()
+BASE_DIR = pathlib.Path.home()
+RELATIVE_PROJECT_DIR = '.local/py2pip'
 
-PATH_STATS_FILE = BASE_DIR / 'stats.txt'
+PATH_STATS_FILE = BASE_DIR / RELATIVE_PROJECT_DIR / 'stats.txt'
 
 SUFFIX_LOG_FILE = 'py2pip_status.log'
-PATH_LOG_FILE = BASE_DIR / SUFFIX_LOG_FILE
+PATH_LOG_FILE = BASE_DIR / RELATIVE_PROJECT_DIR / SUFFIX_LOG_FILE
 
+
+PATH_PIP_COMMAND = 'pip'
 
 
 class LookupTags():

@@ -13,7 +13,7 @@ class ParseHTML(object):
         self.log = log
 
     def strip(self, text):
-        return text.strip()  # Removes leading trailing and leading spaces and \n
+        return text.strip()  # Removes trailing and leading spaces and \n
 
     async def get_soup(self, content):
         return BeautifulSoup(content, features=self.FEATURE)
@@ -33,7 +33,7 @@ class ParseHistoryHTML(ParseHTML):
 
         version = self.strip(version_node.text)
 
-        # Exlude pre-release version
+        # Exclude pre-release version
         if re.search('[a-z]+', version):
             return
 

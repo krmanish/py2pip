@@ -14,7 +14,7 @@ from py2pip.simulator import Logger
 
 class Py2PIPManager(object):
 
-    def __init__(self, project_name, support_py_version, install=False, log=Logger()):
+    def __init__(self, project_name, support_py_version, install=False, log=Logger(), **kwargs):
         """
         Find the python supported package version.
         :param project_name: Python Package Name, 3rd party registered to pip
@@ -37,6 +37,7 @@ class Py2PIPManager(object):
         self.package = project_name
         self.install = install
         self.support_py_version = support_py_version
+        self.enable_event_debug = kwargs.get('enable_debug', False)
 
         self.history_page_parser = ParseHistoryHTML(self.log)
         self.history_versions_page_parser = ParsePackageVersionHTML(self.log)
@@ -44,7 +45,8 @@ class Py2PIPManager(object):
     def start(self):
         self.log.info(f'Commence io loop...')
         self.loop = asyncio.get_event_loop()
-        # self.loop.set_debug(enabled=True)
+        self.loop.set_debug(enabled=self.enable_event_debug)
+
         self.loop.run_until_complete(self.process_package_history_page())  # close will have no effect if called with run_until_complete
 
     def get_support_pkg_version(self):

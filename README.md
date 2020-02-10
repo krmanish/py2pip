@@ -26,7 +26,8 @@ This is the master package for Py2pip using Python3.
 
 It has the following functions:
     1. Required to pass python version and 3rd party package name
-    2. Log will work only executed as a standalone script
+    2. Log will work only if executed as a standalone script.
+    3. Log path dir: ~/.local/py2pip/
 
 
 Installation
