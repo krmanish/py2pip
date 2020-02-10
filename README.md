@@ -53,9 +53,11 @@ Package is written in Python3.7 so needs System or virtual env to have these pac
 7.  packaging
 
 
-    >> import py2pip
-    >> py2pip.process.Py2PIPManager('Django', '2.7').run()
-     Django==1.11.28
+```
+>> import py2pip
+>> py2pip.process.Py2PIPManager('Django', '2.7').run()
+    Django==1.11.28
+```
 
 
 Links
