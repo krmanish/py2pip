@@ -19,7 +19,7 @@ from setuptools import setup, find_packages
 
 
 PACKAGE_NAME = 'py2pip'
-version = '0.0.1'
+version = '1.0.2'
 
 
 class Sdist(_sdist):
@@ -54,7 +54,6 @@ setup(name=PACKAGE_NAME,
         "Development Status :: 5 - Production/Stable",
         "Environment :: No Input/Output (Daemon)",
         "Framework :: AsyncIO",
-        "Framework :: aiohttp",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",

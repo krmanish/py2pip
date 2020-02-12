@@ -52,11 +52,24 @@ Package is written in Python3.7 so needs System or virtual env to have these pac
 6.  aiohttp
 7.  packaging
 
+Usage
+=====
 
 ```
 >> import py2pip
 >> py2pip.process.Py2PIPManager('Django', '2.7').run()
+
     Django==1.11.28
+```
+
+**Using CLI:**
+
+```
+>> python3 -m py2pip --py-version 2.7 -p mock
+
+    Execution time: 2.062346935272217
+    Supported Version: mock==3.0.5
+
 ```
 
 

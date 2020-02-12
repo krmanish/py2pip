@@ -1,7 +1,7 @@
 Changes log
 ===========
 
-0.0.1
+1.0.1(Alpha)
 -----
 
 - Package Initialized with below feature
@@ -10,7 +10,7 @@ Changes log
 
   [Manish]
 
-0.0.2
+1.0.2
 ----
 - Package modification with below feature
     1. Accept custom log path to log the message

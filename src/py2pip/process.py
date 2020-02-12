@@ -117,7 +117,7 @@ class Py2PIPManager(object):
         self.log.info('Create client session and read page')
 
         if self.show_progress:
-            task = asyncio.create_task(self.show_progress_msg())
+            task = self.loop.create_task(self.show_progress_msg())
 
         async with aiohttp.ClientSession() as session:
             await self.process_history_page(session)
