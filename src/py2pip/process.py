@@ -6,6 +6,7 @@ import aiohttp
 import asyncio
 import subprocess
 import sys
+import time
 
 from py2pip import config
 from py2pip.parser import ParseHistoryHTML, ParsePackageVersionHTML
@@ -33,20 +34,32 @@ class Py2PIPManager(object):
         """
         self.package_history_url = config.PIPServer.HOST + config.PIPServer.PATH.format(project=project_name)
         self.log = log
+        self.running = True
 
         self.package = project_name
         self.install = install
         self.support_py_version = support_py_version
         self.enable_event_debug = kwargs.get('enable_debug', False)
+        self.show_progress = kwargs.get('show_progress', False)  # Show the progress status on Terminal
 
         self.history_page_parser = ParseHistoryHTML(self.log)
         self.history_versions_page_parser = ParsePackageVersionHTML(self.log)
+
+    async def show_progress_msg(self):
+        while True:
+            if not self.running:
+                return
+            print('Running', end="\r")
+            for i in range(4):
+                await asyncio.sleep(.3)
+                print(f"Running{'.'*i}", end="\r")
+
+            await asyncio.sleep(.5)
 
     def start(self):
         self.log.info(f'Commence io loop...')
         self.loop = asyncio.get_event_loop()
         self.loop.set_debug(enabled=self.enable_event_debug)
-
         self.loop.run_until_complete(self.process_package_history_page())  # close will have no effect if called with run_until_complete
 
     def get_support_pkg_version(self):
@@ -59,6 +72,7 @@ class Py2PIPManager(object):
         self.start()
 
         # Return value upon completion
+        self.running = False
         return self.get_support_pkg_version()
 
     async def process_versions_page(self, session):
@@ -72,6 +86,8 @@ class Py2PIPManager(object):
         for pkg_version, pkg_data in version_list.items():
             url = pkg_data['url']
             await self.read_version_page(session, url, pkg_version)
+        else:
+            self.running = False
 
     async def read_version_page(self, session, url, package_version):
         """
@@ -98,7 +114,18 @@ class Py2PIPManager(object):
                 self.log.error(f'{response.status}: PyPi Package {self.package_history_url} is {response.reason}')
 
     async def process_package_history_page(self):
+        self.log.info('Create client session and read page')
+
+        if self.show_progress:
+            task = asyncio.create_task(self.show_progress_msg())
+
         async with aiohttp.ClientSession() as session:
             await self.process_history_page(session)
-            if self.history_page_parser.get_versions():
-                await self.process_versions_page(session)
+            if not self.history_page_parser.get_versions():
+                self.running = False
+                return
+
+            await self.process_versions_page(session)
+
+        if self.show_progress:
+            await task

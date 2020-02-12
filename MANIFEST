@@ -7,3 +7,4 @@ src/py2pip/config.py
 src/py2pip/parser.py
 src/py2pip/process.py
 src/py2pip/simulator.py
+src/py2pip/utils.py

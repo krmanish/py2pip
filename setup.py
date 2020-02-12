@@ -54,11 +54,12 @@ setup(name=PACKAGE_NAME,
         "Development Status :: 5 - Production/Stable",
         "Environment :: No Input/Output (Daemon)",
         "Framework :: AsyncIO",
-        "Framework :: Scrapy",
+        "Framework :: aiohttp",
+        "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3 :: Only",
         'License :: OSI Approved :: MIT License',
         "Operating System :: POSIX :: Linux",
         "Topic :: Internet :: WWW/HTTP",
@@ -86,7 +87,7 @@ setup(name=PACKAGE_NAME,
     ],
     entry_points={
         'console_scripts': [
-            'py2pip=__main__:main',
+            'py2pip=py2pip.__main__:main',
         ]
     },
     cmdclass={

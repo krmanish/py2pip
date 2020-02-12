@@ -100,6 +100,10 @@ class ParsePackageVersionHTML(ParseHTML):
         version_ul_node = soup.find('div', attrs={'class': 'vertical-tabs__tabs'}).find(
             'ul', attrs={'class': 'sidebar-section__classifiers'})
 
+        if not version_ul_node:
+            self.log.debug('No classifiers found. {pkg_version}')
+            return
+
         for li in version_ul_node.children:
             if isinstance(li, str):
                 continue

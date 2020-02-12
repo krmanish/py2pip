@@ -62,12 +62,12 @@ def main():
         log_file_path = pathlib.Path(option.log_file_name)
         log = get_logger(log_file_path, option.enable_debug)
 
-        py2pip_manager = Py2PIPManager(option.package, option.python_support, option.install, log)
+        py2pip_manager = Py2PIPManager(option.package, option.python_support, option.install, log, show_progress=True)
         
         stime = time.time()
         result = py2pip_manager.run()
         etime = time.time()
-        print(f'Support Version: {result}\nExecution time: {etime - stime}')
+        print(f'Execution time: {etime - stime}\nSupported Version: {result}\n')
 
     except ValueError as e:
         print(f'Error: {str(e)}')
